@@ -90,17 +90,42 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    //Zero the encoders
+    m_back_left.setSelectedSensorPosition(0);
+    m_back_right.setSelectedSensorPosition(0);
+    
+    /*m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    */
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    if(_loopCount_right++ > 10)
+    {
+        _loopCount_right = 0;
+        double r_degrees = m_back_right.getSelectedSensorPosition(2);
+        //System.out.println("CANCoder position is: " + degrees);
+        SmartDashboard.putNumber("Right CANCoder:", r_degrees);
+    }
+    if(_loopCount_left++ > 10)
+    {
+        _loopCount_left = 0;
+        double l_degrees = m_back_left.getSelectedSensorPosition(4);
+        SmartDashboard.putNumber("Left CANCoder: ", l_degrees);
+    }
+    if (Math.abs(m_back_left.getSelectedSensorPosition()) < Constants.AUTONOMOUS_DISTANCE) {
+      leftMotors.set(.5);
+    }
+    if (Math.abs(m_back_right.getSelectedSensorPosition()) < Constants.AUTONOMOUS_DISTANCE) {
+      rightMotors.set(.5);
+    }
+  }
 
   @Override
   public void teleopInit() {
@@ -126,14 +151,14 @@ public class Robot extends TimedRobot {
     else if (stick.getRawButtonPressed(2)) {
       shifter.set(DoubleSolenoid.Value.kReverse);
     }
-    if(_loopCount_right++ > 40)
+    if(_loopCount_right++ > 10)
     {
         _loopCount_right = 0;
         double r_degrees = m_back_right.getSelectedSensorPosition(2);
         //System.out.println("CANCoder position is: " + degrees);
         SmartDashboard.putNumber("Right CANCoder:", r_degrees);
     }
-    if(_loopCount_left++ > 40)
+    if(_loopCount_left++ > 10)
     {
         _loopCount_left = 0;
         double l_degrees = m_back_left.getSelectedSensorPosition(4);
