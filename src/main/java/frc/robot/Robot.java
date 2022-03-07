@@ -5,8 +5,11 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.CANCoder;
+
 // note
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
@@ -27,7 +30,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private XboxController test;
   // Right Motors
   private final WPI_TalonSRX m_front_right = new WPI_TalonSRX(Constants.FR_TALONSRX);
   private final WPI_TalonSRX m_back_right = new WPI_TalonSRX(Constants.BR_TALONSRX);
@@ -39,6 +41,7 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup leftMotors = new MotorControllerGroup(m_front_left, m_back_left);
   // Differential Drive
   private final DifferentialDrive drivetrain = new DifferentialDrive(rightMotors,leftMotors);
+  
   // Joystick
   private final Joystick stick = new Joystick(0);
   // Xbox Controller
@@ -109,7 +112,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
   }
-
+  int _loopCount_right=0;
+  int _loopCount_left = 0;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
@@ -121,6 +125,19 @@ public class Robot extends TimedRobot {
     }
     else if (stick.getRawButtonPressed(2)) {
       shifter.set(DoubleSolenoid.Value.kReverse);
+    }
+    if(_loopCount_right++ > 40)
+    {
+        _loopCount_right = 0;
+        double r_degrees = m_back_right.getSelectedSensorPosition(2);
+        //System.out.println("CANCoder position is: " + degrees);
+        SmartDashboard.putNumber("Right CANCoder:", r_degrees);
+    }
+    if(_loopCount_left++ > 40)
+    {
+        _loopCount_left = 0;
+        double l_degrees = m_back_left.getSelectedSensorPosition(4);
+        SmartDashboard.putNumber("Left CANCoder: ", l_degrees);
     }
 
   }
