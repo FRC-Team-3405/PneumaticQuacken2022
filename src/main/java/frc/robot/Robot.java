@@ -5,7 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+// note
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
+  private XboxController test;
   // Right Motors
   private final WPI_TalonSRX m_front_right = new WPI_TalonSRX(Constants.FR_TALONSRX);
   private final WPI_TalonSRX m_back_right = new WPI_TalonSRX(Constants.BR_TALONSRX);
