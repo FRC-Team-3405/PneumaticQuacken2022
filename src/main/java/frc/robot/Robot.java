@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 // note
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -19,6 +20,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -50,6 +54,14 @@ public class Robot extends TimedRobot {
   private final Compressor comp = new Compressor(Constants.COMPRESSOR_PORT, PneumaticsModuleType.CTREPCM);
   private final DoubleSolenoid shifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,4,5);
 
+  //Limelight
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  NetworkTableEntry tx = table.getEntry("tx");
+  NetworkTableEntry ty = table.getEntry("ty");
+  NetworkTableEntry ta = table.getEntry("ta");
+
+  //Pigeon 2
+  PigeonIMU _pigeon = new PigeonIMU(0);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -106,12 +118,28 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    //read values periodically
+    double x = tx.getDouble(0.0);
+    double y = ty.getDouble(0.0);
+    double area = ta.getDouble(0.0);
+
+    //post to smart dashboard periodically
+    SmartDashboard.putNumber("LimelightX", x);
+    SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightArea", area);
+
     if(_loopCount_right++ > 10)
     {
         _loopCount_right = 0;
         double r_degrees = m_back_right.getSelectedSensorPosition(2);
         //System.out.println("CANCoder position is: " + degrees);
         SmartDashboard.putNumber("Right CANCoder:", r_degrees);
+
+        //Pigeon 2
+        double[] ypr = new double[3];
+        _pigeon.getYawPitchRoll(ypr);
+        SmartDashboard.putNumber("Pigeon Yaw is: ", ypr[0]);
+    
     }
     if(_loopCount_left++ > 10)
     {
@@ -137,11 +165,20 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
   }
-  int _loopCount_right=0;
+  int _loopCount_right = 0;
   int _loopCount_left = 0;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    //read values periodically
+    double x = tx.getDouble(0.0);
+    double y = ty.getDouble(0.0);
+    double area = ta.getDouble(0.0);
+
+    //post to smart dashboard periodically
+    SmartDashboard.putNumber("LimelightX", x);
+    SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightArea", area);
 
     drivetrain.arcadeDrive(stick.getX(),stick.getY());
 
@@ -153,10 +190,17 @@ public class Robot extends TimedRobot {
     }
     if(_loopCount_right++ > 10)
     {
+
         _loopCount_right = 0;
         double r_degrees = m_back_right.getSelectedSensorPosition(2);
         //System.out.println("CANCoder position is: " + degrees);
         SmartDashboard.putNumber("Right CANCoder:", r_degrees);
+
+        //Pigeon 2
+        double[] ypr = new double[3];
+            _pigeon.getYawPitchRoll(ypr);
+            SmartDashboard.putNumber("Pigeon Yaw is: ", ypr[0]);
+
     }
     if(_loopCount_left++ > 10)
     {

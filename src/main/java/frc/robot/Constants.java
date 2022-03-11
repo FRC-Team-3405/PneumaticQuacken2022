@@ -28,7 +28,7 @@ package frc.robot;
     public static final int DRIVER_CONTROLLER_ROTATE_AXIS = 2; // Change for your controller
 
 
-    public static final double AUTONOMOUS_DISTANCE = 1500;
+    public static final double AUTONOMOUS_DISTANCE = 2500;
 
 
     // Drive
